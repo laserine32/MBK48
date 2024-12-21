@@ -1,0 +1,67 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Purchase {
+  id    String           @id @default(cuid())
+  date  DateTime         @default(now())
+  total Int              @default(0)
+  items PurchaseDetail[]
+}
+
+model Items {
+  id       String           @id @default(cuid())
+  name     String
+  unit     String
+  price    Int
+  flag     Boolean          @default(true)
+  purchase PurchaseDetail[]
+}
+
+model PurchaseDetail {
+  item       Items    @relation(fields: [itemId], references: [id])
+  itemId     String
+  purchase   Purchase @relation(fields: [purchaseId], references: [id])
+  purchaseId String
+  qty        Int
+  cost       Int
+  total      Int
+
+  @@id([itemId, purchaseId])
+}
+
+model Packs {
+  id            String       @id @default(cuid())
+  name          String
+  total_content Int
+  flag          Boolean      @default(true)
+  inUse         PackInUse[]
+  production    Production[]
+}
+
+model PackInUse {
+  id         Int      @id @default(autoincrement())
+  pack       Packs    @relation(fields: [packId], references: [id])
+  packId     String
+  time_start DateTime @default(now())
+  time_end   DateTime @updatedAt
+  flag       Boolean  @default(true)
+}
+
+model Production {
+  id     Int      @id @default(autoincrement())
+  pack   Packs    @relation(fields: [packId], references: [id])
+  packId String
+  date   DateTime @default(now())
+}
