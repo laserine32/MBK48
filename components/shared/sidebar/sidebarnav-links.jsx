@@ -15,8 +15,7 @@ const links = [
 ]
 
 const SidebarNavLinks = () => {
-	const pathname = usePathname()
-	// console.log(pathname)
+	const pathname = `/${usePathname().split("/")[1]}`
 	return (
 		<>
 			<SidebarMenu>
