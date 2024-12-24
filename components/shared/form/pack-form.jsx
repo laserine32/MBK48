@@ -26,7 +26,7 @@ const PackForm = ({ pageTitle, dataForm = null }) => {
 				</div>
 				<div className="mt-6 flex justify-end gap-4">
 					<Button variant="outline" asChild>
-						<Link href="/item">Cancel</Link>
+						<Link href="/pack">Cancel</Link>
 					</Button>
 					<SubmitButton label={dataForm ? "update" : "save"} />
 				</div>

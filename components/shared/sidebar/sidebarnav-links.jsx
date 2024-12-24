@@ -10,8 +10,8 @@ const links = [
 	{ name: "Items", href: "/item", icon: Beer },
 	{ name: "Purchase", href: "/purchase", icon: ShoppingCart },
 	{ name: "Pack", href: "/pack", icon: Package },
-	{ name: "Pack In Ise", href: "/pack/inuse", icon: PackageOpen },
-	{ name: "Production", href: "/pack/production", icon: PackagePlus },
+	{ name: "Pack In Use", href: "/inuse", icon: PackageOpen },
+	{ name: "Production", href: "/production", icon: PackagePlus },
 ]
 
 const SidebarNavLinks = () => {

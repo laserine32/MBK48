@@ -23,7 +23,7 @@ const PackPage = async ({ searchParams }) => {
 	return (
 		<>
 			<StandardPage
-				pageTitle={"Items"}
+				pageTitle={"Packs"}
 				suspenseKey={query + currentPage}
 				tableHeader={tableHeader}
 				tr={tr}
