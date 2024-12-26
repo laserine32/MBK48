@@ -22,7 +22,7 @@ const SidebarNavLinks = () => {
 				{links.map((link) => (
 					<SidebarMenuItem key={link.name}>
 						<SidebarMenuButton asChild>
-							<Link href={link.href} className={cn(link.href === pathname ? "text-black font-bold" : "")}>
+							<Link href={link.href} className={cn(link.href === pathname ? "font-bold" : "")}>
 								<link.icon />
 								<span>{link.name}</span>
 							</Link>
