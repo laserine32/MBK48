@@ -149,9 +149,52 @@ export const InputCurrencyIDR = ({ title, name, value = "", state }) => {
 	)
 }
 
+export const ComboBoxCustom = ({ title, name, data, state, callBack, value = "" }) => {
+	const [open, setOpen] = useState(false)
+	const [defaultValue, setDefaultValue] = useState(value)
+	const onselect = (currentValue) => {
+		setDefaultValue(currentValue == defaultValue ? "" : currentValue)
+		setOpen(false)
+		callBack(currentValue)
+	}
+	return (
+		<ComboBoxRender
+			title={title}
+			name={name}
+			data={data}
+			state={state}
+			open={open}
+			setOpen={setOpen}
+			defaultValue={defaultValue}
+			onSelect={onselect}
+			value={value}
+		/>
+	)
+}
+
 export const ComboBox = ({ title, name, data, state, value = "" }) => {
 	const [open, setOpen] = useState(false)
 	const [defaultValue, setDefaultValue] = useState(value)
+	const onselect = (currentValue) => {
+		setDefaultValue(currentValue == defaultValue ? "" : currentValue)
+		setOpen(false)
+	}
+	return (
+		<ComboBoxRender
+			title={title}
+			name={name}
+			data={data}
+			state={state}
+			open={open}
+			setOpen={setOpen}
+			defaultValue={defaultValue}
+			onSelect={onselect}
+			value={value}
+		/>
+	)
+}
+
+export const ComboBoxRender = ({ title, name, data, state, open, setOpen, defaultValue, onSelect, value = "" }) => {
 	const placeholder = `${title}...`
 	const errorId = `${name}-error`
 	return (
@@ -183,14 +226,7 @@ export const ComboBox = ({ title, name, data, state, value = "" }) => {
 										<CommandEmpty>{`No ${title} found.`}</CommandEmpty>
 										<CommandGroup>
 											{data.map((d) => (
-												<CommandItem
-													key={d.value}
-													value={d.value}
-													onSelect={(currentValue) => {
-														setDefaultValue(currentValue == defaultValue ? "" : currentValue)
-														setOpen(false)
-													}}
-												>
+												<CommandItem key={d.value} value={d.value} onSelect={onSelect}>
 													{d.label}
 													<Check className={cn("ml-auto", defaultValue === d.value ? "opacity-100" : "opacity-0")} />
 												</CommandItem>

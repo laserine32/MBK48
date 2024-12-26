@@ -1,3 +1,4 @@
+import { cn } from "@/lib/utils"
 import { Card, CardContent, CardHeader } from "../ui/card"
 import { Skeleton } from "../ui/skeleton"
 
@@ -16,7 +17,7 @@ export const CardSkeleton = () => {
 }
 
 export const TableItemsSkeleton = () => {
-	const data = [...Array(10).keys()]
+	const data = [...Array(5).keys()]
 	return (
 		<table className="w-full text-sm text-left text-gray-500">
 			<thead className="text-sm text-gray-700 uppercase bg-gray-50">
@@ -53,7 +54,7 @@ export const TableItemsSkeleton = () => {
 	)
 }
 export const TableSkeleton = ({ header }) => {
-	const data = [...Array(10).keys()]
+	const data = [...Array(5).keys()]
 	return (
 		<table className="w-full text-sm text-left text-gray-500">
 			<thead className="text-sm text-gray-700 uppercase bg-gray-50">
@@ -85,5 +86,51 @@ export const TableSkeleton = ({ header }) => {
 				))}
 			</tbody>
 		</table>
+	)
+}
+
+export const TransactionDetailSkelecton = ({ header }) => {
+	const data = [...Array(5).keys()]
+	return (
+		<>
+			<div className="flex items-center justify-start gap-1 mb-5">
+				<h3>Date :</h3>
+				<Skeleton className="h-5 w-40" />
+			</div>
+			<table className="w-full text-sm text-left">
+				<thead className="text-sm uppercase">
+					<tr>
+						{header.map((item, index) => {
+							return (
+								<th className="p-2 md:py-3 md:px-6" key={index}>
+									{item}
+								</th>
+							)
+						})}
+					</tr>
+				</thead>
+				<tbody>
+					{data.map((item, index) => (
+						<tr key={index} className="bg-white border-b">
+							{header.map((item, index) => (
+								<td key={index} className="p-2 md:py-3 md:px-6">
+									<Skeleton className={cn("h-6", item === "#" ? "w-6" : "w-16")} />
+								</td>
+							))}
+						</tr>
+					))}
+				</tbody>
+				<tfoot>
+					<tr>
+						<th colSpan={header.length - 1} className="p-2 md:py-3 md:px-6">
+							TOTAL
+						</th>
+						<td className="p-2 md:py-3 md:px-6">
+							<Skeleton className="h-6 w-16" />
+						</td>
+					</tr>
+				</tfoot>
+			</table>
+		</>
 	)
 }

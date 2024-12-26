@@ -6,7 +6,7 @@ export const metadata = {
 	title: "Packs",
 }
 
-const tableHeader = ["#", "NAME", "TOTAL CONTENT", "ACTIONS"]
+const tableHeader = ["#", "NAME", "CONTENT", "ACTIONS"]
 
 const PackPage = async ({ searchParams }) => {
 	const csp = await searchParams

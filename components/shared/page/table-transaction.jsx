@@ -1,18 +1,19 @@
+import { formatCurrency, formatDateToLocal } from "@/lib/utils"
 import { TableButton } from "../buttons"
 
-const Table = ({ headers, data }) => {
+const TableTransaction = ({ headers, data, items, action = false }) => {
 	return (
 		<>
+			{!action && (
+				<div className="flex items-center justify-start gap-1 mb-5">
+					<h3>Date :</h3>
+					<p>{formatDateToLocal(data.date)}</p>
+				</div>
+			)}
 			<table className="w-full text-sm text-left">
 				<thead className="text-sm uppercase">
 					<tr>
 						{headers.map((item, index) => {
-							if (item.toLowerCase() == "actions")
-								return (
-									<th className="p-2 md:py-3 md:px-6 text-center" key={index}>
-										Actions
-									</th>
-								)
 							return (
 								<th className="p-2 md:py-3 md:px-6" key={index}>
 									{item}
@@ -21,9 +22,17 @@ const Table = ({ headers, data }) => {
 						})}
 					</tr>
 				</thead>
-				<tbody className="divide-y">
-					<TableRow tr={data} />
+				<tbody>
+					<TableRow tr={items} />
 				</tbody>
+				<tfoot>
+					<tr>
+						<th colSpan={headers.length - (action ? 2 : 1)} className="p-2 md:py-3 md:px-6">
+							TOTAL
+						</th>
+						<td className="p-2 md:py-3 md:px-6">{formatCurrency(data.total)}</td>
+					</tr>
+				</tfoot>
 			</table>
 		</>
 	)
@@ -32,7 +41,7 @@ const Table = ({ headers, data }) => {
 const TableRow = ({ tr }) => {
 	return tr.map((trtd, i) => (
 		<tr key={i} className="border-b">
-			{trtd.map((td, j) => (
+			{trtd?.map((td, j) => (
 				<TableData key={j} td={td} />
 			))}
 		</tr>
@@ -57,4 +66,4 @@ const TableData = ({ td }) => {
 	return <td className="p-2 md:py-3 md:px-6">{td.value}</td>
 }
 
-export default Table
+export default TableTransaction

@@ -1,6 +1,6 @@
 "use client"
 import { Button } from "@/components/ui/button"
-import { CircleHelp, Loader2, Pencil, Plus, Trash, TriangleAlert } from "lucide-react"
+import { CircleHelp, Eye, Loader2, Pencil, Plus, Trash, TriangleAlert } from "lucide-react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { useFormStatus } from "react-dom"
@@ -33,9 +33,10 @@ export const TableButton = ({ id, name, action = null }) => {
 	const pathname = usePathname()
 	let href = `${pathname}/${name}/${id}`
 	let Icn = CircleHelp
-	if (name == "delete") return <DeleteButton id={id} action={action} />
 	if (name == "edit") Icn = Pencil
-	if (name == "view") Icn = Trash
+	if (name == "view") Icn = Eye
+	if (name == "delete") return <DeleteButton id={id} action={action} />
+	if (name == "delete_tansaction") return <DeleteButtonTransaction id={id} action={action} />
 	return (
 		<>
 			<Button variant="outline" size="icon" asChild>
@@ -43,6 +44,20 @@ export const TableButton = ({ id, name, action = null }) => {
 					<Icn className="w-5" />
 				</Link>
 			</Button>
+		</>
+	)
+}
+
+export const DeleteButtonTransaction = ({ id, action }) => {
+	const DeleteAppWithId = action.bind(null, id)
+	const [state, formAction] = useActionState(DeleteAppWithId, null)
+	return (
+		<>
+			<form action={formAction}>
+				<Button type="submit" variant="outline" size="icon">
+					<Trash className="w-5" />
+				</Button>
+			</form>
 		</>
 	)
 }
@@ -103,6 +118,10 @@ export const SubmitButton = ({ label }) => {
 	if (label == "delete") {
 		lblBtn = "Delete"
 		lblBtnLoading = "Deleting..."
+	}
+	if (label == "add") {
+		lblBtn = "Add"
+		lblBtnLoading = "Adding..."
 	}
 	if (pending) {
 		return (
