@@ -3,6 +3,8 @@ import "./globals.css"
 import { APP_DESCRIPTION, APP_NAME, SERVER_URL } from "@/lib/constants"
 import { ThemeProvider } from "next-themes"
 
+export const revalidate = 60
+
 const geistSans = Geist({
 	variable: "--font-geist-sans",
 	subsets: ["latin"],
