@@ -112,7 +112,7 @@ export const InputTextDataList = ({ title, name, value = "", units, state }) => 
 	)
 }
 
-export const InputCurrencyIDR = ({ title, name, value = "", state }) => {
+export const InputCurrencyIDR = ({ title, name, state, ...props }) => {
 	const placeholder = `${title}...`
 	const errorId = `${name}-error`
 	return (
@@ -133,8 +133,8 @@ export const InputCurrencyIDR = ({ title, name, value = "", state }) => {
 								state?.Errors[name] && "border-red-500"
 							)}
 							placeholder={placeholder}
-							defaultValue={value}
 							aria-describedby={errorId}
+							{...props}
 						/>
 						<div className="pointer-events-none absolute left-3 top-1/2 w-[18px] -translate-y-1/2">
 							<p>Rp.</p>

@@ -22,7 +22,7 @@ const ItemForm = ({ pageTitle, dataForm = null }) => {
 				<div className="p-4 md:p-6">
 					<InputText title={"Item Name"} name={"name"} state={state} value={dataForm?.name} />
 					<InputTextDataList title={"Unit"} name={"unit"} state={state} units={units} value={dataForm?.unit} />
-					<InputCurrencyIDR title={"Price"} name={"price"} state={state} value={dataForm?.price} />
+					<InputCurrencyIDR title={"Price"} name={"price"} state={state} defaultValue={dataForm?.price} />
 					<div id="message-error" aria-live="polite" aria-atomic="true">
 						<p className="mt-2 text-sm text-red-500">{state?.message}</p>
 					</div>

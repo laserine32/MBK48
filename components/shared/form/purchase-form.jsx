@@ -31,6 +31,10 @@ const PurchaseForm = ({ pageTitle, dataItems }) => {
 		setTotal(tot)
 	}, [detailPurchase])
 
+	// useEffect(() => {
+	// 	console.log(itemPrice, itemName)
+	// }, [itemPrice, itemName])
+
 	const onSelect = (value) => {
 		const { label, price } = dataItems.filter((e) => e.value === value)[0]
 		setItemPrice(price)
@@ -109,7 +113,7 @@ const PurchaseForm = ({ pageTitle, dataItems }) => {
 						callBack={onSelect}
 						value={""}
 					/>
-					<InputCurrencyIDR title={"Price"} name={"price"} state={state} value={itemPrice} />
+					<InputCurrencyIDR title={"Price"} name={"price"} state={state} value={itemPrice} onChange={() => {}} />
 					<InputNumber title={"Qty"} name={"qty"} state={state} value={1} />
 					<div id="message-error" aria-live="polite" aria-atomic="true">
 						<p className="mt-2 text-sm text-red-500">{state?.message}</p>
