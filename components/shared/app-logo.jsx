@@ -1,24 +1,20 @@
-import { APP_DESCRIPTION, APP_NAME } from "@/lib/constants"
-import Image from "next/image"
+import { APP_NAME } from "@/lib/constants"
 import Link from "next/link"
 
-const AppLogo = (props) => {
+export const AppLogo = () => {
 	return (
 		<>
-			<Link href="/" {...props}>
-				<div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground">
+			<Link href="/" className="flex-start">
+				<div className={`flex flex-row items-end space-x-2`}>
 					<SvgLogo width={32} height={32} />
-				</div>
-				<div className="grid flex-1 text-left text-sm leading-tight">
-					<span className="truncate font-semibold">{APP_NAME}</span>
-					<span className="truncate text-xs">{APP_DESCRIPTION}</span>
+					<span className="text-xl">{APP_NAME}</span>
 				</div>
 			</Link>
 		</>
 	)
 }
 
-const SvgLogo = (props) => (
+export const SvgLogo = (props) => (
 	<svg
 		xmlns="http://www.w3.org/2000/svg"
 		xmlnsXlink="http://www.w3.org/1999/xlink"
@@ -173,5 +169,3 @@ const SvgLogo = (props) => (
 		</g>
 	</svg>
 )
-
-export default AppLogo

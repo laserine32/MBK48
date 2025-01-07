@@ -1,4 +1,4 @@
-import AppLogo from "@/components/shared/app-logo"
+import { AppLogo } from "@/components/shared/app-logo"
 import { FlashMessageProvider } from "@/components/shared/kilat-message-providex"
 import AppSidebar from "@/components/shared/sidebar/app-sidebar"
 import { SidebarInset, SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar"

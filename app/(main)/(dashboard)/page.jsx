@@ -1,3 +1,5 @@
+import MainChartWrapper from "@/components/shared/dashboard/main-chart-wrapper"
+import QuickLink from "@/components/shared/dashboard/quick-link"
 import StatCardsWrapper from "@/components/shared/dashboard/stat-cards-wrapper"
 import PageTitle from "@/components/shared/page/page-title"
 import { CardsSkeleton } from "@/components/shared/skeletons"
@@ -11,6 +13,9 @@ const DashboardPage = async () => {
 				<Suspense fallback={<CardsSkeleton />}>
 					<StatCardsWrapper />
 				</Suspense>
+			</div>
+			<div className="mt-6 grid grid-cols-1 gap-6 md:grid-cols-8">
+				<MainChartWrapper />
 			</div>
 		</>
 	)
