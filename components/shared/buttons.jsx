@@ -15,6 +15,8 @@ import {
 	DialogTitle,
 } from "../ui/dialog"
 import { useActionState, useEffect, useState } from "react"
+import { flashMessage } from "@/lib/flash/Kilat"
+import { toast } from "sonner"
 
 export const CreateButton = () => {
 	const pathname = usePathname()
@@ -69,6 +71,17 @@ export const DeleteButton = ({ id, action }) => {
 	useEffect(() => {
 		if (state?.success) {
 			setDialogOpen(false)
+			const showFlashMessage = async () => {
+				const flash = await flashMessage()
+				if (flash) {
+					if (flash.level) {
+						toast[flash.level](flash.message, flash.options)
+					} else {
+						toast(flash.message, flash.options)
+					}
+				}
+			}
+			showFlashMessage()
 		}
 	}, [state])
 

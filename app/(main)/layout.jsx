@@ -1,4 +1,5 @@
 import AppLogo from "@/components/shared/app-logo"
+import { FlashMessageProvider } from "@/components/shared/kilat-message-providex"
 import AppSidebar from "@/components/shared/sidebar/app-sidebar"
 import { SidebarInset, SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar"
 const Mainlayout = ({ children }) => {
@@ -16,6 +17,7 @@ const Mainlayout = ({ children }) => {
 						</div>
 					</header>
 					<main className="p-4 md:p-8">{children}</main>
+					<FlashMessageProvider />
 				</SidebarInset>
 			</SidebarProvider>
 		</>
