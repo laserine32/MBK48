@@ -1,5 +1,7 @@
+import ProductionForm from "@/components/shared/form/production-form"
 import StandardPage from "@/components/shared/page/standard-page"
-import { productionModel } from "@/lib/repo"
+import { getNextProduction } from "@/lib/actions/other.action"
+import { packModel, productionModel } from "@/lib/repo"
 import { formatDateToLocal } from "@/lib/utils"
 
 export const metadata = {
@@ -19,8 +21,14 @@ const ProductionPage = async ({ searchParams }) => {
 		{ type: "data", value: item.pack.name },
 		{ type: "data", value: formatDateToLocal(item.date) },
 	])
+
+	const getAll = await packModel.getAll()
+	const dataPack = getAll.map((pack) => ({ value: pack.id, label: pack.name }))
+	const lastProduction = await getNextProduction(dataPack)
+
 	return (
 		<>
+			<ProductionForm pageTitle={"Add Production"} dataPack={dataPack} value={lastProduction.value} />
 			<StandardPage
 				pageTitle={"Production"}
 				suspenseKey={query + currentPage}
