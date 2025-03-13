@@ -13,9 +13,9 @@ const StatCardsWrapper = async () => {
 	const { expenses, produced, packinuse, daysspent } = await fetchDataCards()
 	return (
 		<>
-			<StatCard title="Expenses" value={expenses} type="expenses" />
-			<StatCard title="Produced" value={produced} type="produced" />
-			<StatCard title="Pack In Use" value={packinuse} type="packinuse" />
+			<StatCard title="Expenses" value={expenses.total} type="expenses" subvalue={expenses.day} />
+			<StatCard title="Produced" value={produced.total} type="produced" subvalue={produced.day} />
+			<StatCard title="Pack In Use" value={packinuse.total} type="packinuse" subvalue={packinuse.day} />
 			<StatCard title="Days Spent" value={daysspent.days} type="daysspent" subvalue={daysspent.spell} />
 		</>
 	)
