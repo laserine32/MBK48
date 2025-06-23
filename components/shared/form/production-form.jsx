@@ -7,12 +7,13 @@ import { Button } from "@/components/ui/button"
 import Link from "next/link"
 import { SubmitButton } from "../buttons"
 
-const ProductionForm = ({ pageTitle, dataPack, value = "", dataForm = null }) => {
+const ProductionForm = ({ pageTitle, dataPack, value = "", redirect = "production", dataForm = null }) => {
 	const [state, formAction] = useActionState(createProduction, null)
 	return (
 		<>
 			<PageTitle>{pageTitle.toUpperCase()}</PageTitle>
 			<form action={formAction}>
+				<input type="hidden" name={"redirect"} value={redirect} />
 				<div className="p-4 md:p-6">
 					<ComboBox data={dataPack} title={"Pack"} name={"packId"} state={state} value={value} />
 					<div id="message-error" aria-live="polite" aria-atomic="true">

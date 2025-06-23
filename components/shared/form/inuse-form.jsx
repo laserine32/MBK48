@@ -7,12 +7,13 @@ import { ComboBox } from "./input"
 import { useActionState } from "react"
 import { createInUse } from "@/lib/actions/inuse.action"
 
-const InuseForm = ({ pageTitle, dataPack, value = "", dataForm = null }) => {
+const InuseForm = ({ pageTitle, dataPack, value = "", redirect = "inuse", dataForm = null }) => {
 	const [state, formAction] = useActionState(createInUse, null)
 	return (
 		<>
 			<PageTitle>{pageTitle.toUpperCase()}</PageTitle>
 			<form action={formAction}>
+				<input type="hidden" name={"redirect"} value={redirect} />
 				<div className="p-4 md:p-6">
 					<ComboBox data={dataPack} title={"Pack"} name={"packId"} state={state} value={value} />
 					<div id="message-error" aria-live="polite" aria-atomic="true">

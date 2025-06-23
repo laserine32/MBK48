@@ -26,7 +26,8 @@ const SidebarNavLinks = () => {
 					<SidebarMenuItem key={link.name}>
 						<SidebarMenuButton asChild>
 							<Link
-								href={`${link.href}${isMobile && ["Pack In Use", "Production"].includes(link.name) ? "/add" : ""}`}
+								// href={`${link.href}${isMobile && ["Pack In Use", "Production"].includes(link.name) ? "/add" : ""}`}
+								href={`${link.href}`}
 								className={cn(link.href === pathname ? "font-bold" : "")}
 							>
 								<link.icon />
