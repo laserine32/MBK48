@@ -28,7 +28,7 @@ const SidebarNavLinks = () => {
 							<Link
 								// href={`${link.href}${isMobile && ["Pack In Use", "Production"].includes(link.name) ? "/add" : ""}`}
 								href={`${link.href}`}
-								className={cn(link.href === pathname ? "font-bold" : "")}
+								className={cn(link.href === pathname ? "font-bold" : "", "linking")}
 							>
 								<link.icon />
 								<span>{link.name}</span>

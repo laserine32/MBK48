@@ -1,32 +1,21 @@
 "use client"
-import { Bar, BarChart, CartesianGrid, XAxis } from "recharts"
+import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from "recharts"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart"
 import { useMemo, useState } from "react"
 import { formatCurrency } from "@/lib/utils"
 
-// const chartData = [
-// 	{ month: "January", desktop: 222, mobile: 150 },
-// 	{ month: "February", desktop: 522, mobile: 950 },
-// 	{ month: "March", desktop: 722, mobile: 250 },
-// 	{ month: "April", desktop: 122, mobile: 850 },
-// 	{ month: "May", desktop: 22, mobile: 150 },
-// ]
-
 const chartConfig = {
-	views: {
-		label: "Total",
-	},
 	purchase: {
-		label: "Purchase",
+		label: "purchase",
 		color: "hsl(var(--chart-1))",
 	},
 	production: {
-		label: "Production",
+		label: "production",
 		color: "hsl(var(--chart-2))",
 	},
 	packinuse: {
-		label: "Pack In Use",
+		label: "packinuse",
 		color: "hsl(var(--chart-3))",
 	},
 }
@@ -45,11 +34,11 @@ const MainChart = ({ mainData }) => {
 	)
 	return (
 		<>
-			<Card className="w-full md:col-span-8">
-				<CardHeader className="flex flex-col items-stretch space-y-0 border-b p-0 sm:flex-row">
+			<Card className="w-full">
+				<CardHeader className="flex flex-col items-stretch space-y-0 border-b p-0">
 					<div className="flex flex-1 flex-col justify-center gap-1 px-6 py-5 sm:py-6">
 						<CardTitle>Bar Chart - Interactive</CardTitle>
-						<CardDescription>Showing Expenses, Produced & Pack In Use Chart for the last 3 months</CardDescription>
+						<CardDescription>Showing Expenses, Produced & Pack In Use Chart</CardDescription>
 					</div>
 					<div className="flex">
 						{["purchase", "production", "packinuse"].map((key) => {
@@ -58,7 +47,7 @@ const MainChart = ({ mainData }) => {
 								<button
 									key={chart}
 									data-active={activeChart === chart}
-									className="relative z-30 flex flex-1 flex-col justify-center gap-1 border-t px-6 py-4 text-left even:border-l data-[active=true]:bg-muted/50 sm:border-l sm:border-t-0 sm:px-8 sm:py-6"
+									className="relative z-30 flex flex-1 flex-col justify-center gap-1 border-t p-2 text-left even:border-l data-[active=true]:bg-muted/50 sm:border-l sm:border-t-0"
 									onClick={() => setActiveChart(chart)}
 								>
 									<span className="text-sm font-bold leading-none">{chartConfig[chart].label}</span>
@@ -67,23 +56,24 @@ const MainChart = ({ mainData }) => {
 						})}
 					</div>
 				</CardHeader>
-				<CardContent className="px-2 sm:p-6">
-					<ChartContainer config={chartConfig} className="aspect-auto h-[250px] w-full">
+				<CardContent className="mt-4">
+					<ChartContainer config={chartConfig} className="h-[80vh] w-full">
 						<BarChart
 							accessibilityLayer
 							data={chartData}
+							layout="vertical"
 							margin={{
-								left: 12,
-								right: 12,
+								left: -20,
 							}}
 						>
-							<CartesianGrid vertical={false} />
-							<XAxis
+							<CartesianGrid vertical={true} />
+							<XAxis type="number" dataKey={activeChart} hide />
+							<YAxis
 								dataKey="month"
+								type="category"
 								tickLine={false}
+								tickMargin={10}
 								axisLine={false}
-								tickMargin={8}
-								minTickGap={32}
 								tickFormatter={(value) => value.slice(0, 3)}
 							/>
 							<ChartTooltip
@@ -110,7 +100,7 @@ const MainChart = ({ mainData }) => {
 									/>
 								}
 							/>
-							<Bar dataKey={activeChart} fill={`var(--color-${activeChart})`} />
+							<Bar dataKey={activeChart} fill={`var(--color-${activeChart})`} radius={5} />
 						</BarChart>
 					</ChartContainer>
 				</CardContent>

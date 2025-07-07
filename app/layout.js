@@ -2,6 +2,7 @@ import { Geist, Geist_Mono } from "next/font/google"
 import "./globals.css"
 import { APP_DESCRIPTION, APP_NAME, SERVER_URL } from "@/lib/constants"
 import { ThemeProvider } from "next-themes"
+import ProgresBar from "@/components/shared/progres-bar"
 
 export const revalidate = 0
 
@@ -29,6 +30,7 @@ export default function RootLayout({ children }) {
 		<html lang="en" suppressHydrationWarning>
 			<body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
 				<ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
+					<ProgresBar />
 					{children}
 				</ThemeProvider>
 			</body>

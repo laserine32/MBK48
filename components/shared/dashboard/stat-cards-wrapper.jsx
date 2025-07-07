@@ -32,9 +32,28 @@ const StatCard = ({ title, value, type, subvalue = null }) => {
 				</CardHeader>
 				<CardContent>
 					<p className="truncate rounded-xl p-2 text-2xl">{value}</p>
-					{subvalue && <p className="text-xs text-muted-foreground">{subvalue}</p>}
+					{subvalue && <SubValue value={subvalue} />}
 				</CardContent>
 			</Card>
+		</>
+	)
+}
+
+const SubValue = ({ value }) => {
+	if (Array.isArray(value)) {
+		return (
+			<>
+				{value.map((e, i) => (
+					<p key={i} className="text-xs text-muted-foreground">
+						{e}
+					</p>
+				))}
+			</>
+		)
+	}
+	return (
+		<>
+			<p className="text-xs text-muted-foreground">{value}</p>
 		</>
 	)
 }

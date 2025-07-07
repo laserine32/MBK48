@@ -15,12 +15,11 @@ const DashboardPage = async () => {
 					<StatCardsWrapper />
 				</Suspense>
 			</div>
-			<div className="mt-6 grid grid-cols-1 gap-6 md:grid-cols-8">
+			<div className="mt-6 grid grid-cols-1 gap-6 md:grid-cols-2">
+				<RatioCardWrapper />
 				<MainChartWrapper />
 			</div>
-			<div className="mt-6 grid grid-cols-2 gap-6 md:grid-cols-2">
-				<RatioCardWrapper />
-			</div>
+			<div className="mt-6 grid grid-cols-2 gap-6 md:grid-cols-2"></div>
 		</>
 	)
 }
