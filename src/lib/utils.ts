@@ -60,3 +60,10 @@ export const generatePagination = (currentPage: number, totalPages: number): pag
   }
   return [1, "...", currentPage - 1, currentPage, currentPage + 1, "...", totalPages];
 };
+
+export const getYearPassed = () => {
+  const startYear: number = 2024;
+  const currentYear: number = new Date().getFullYear();
+  const years: number[] = Array.from({ length: currentYear - startYear + 1 }, (_, i) => startYear + i);
+  return years;
+};

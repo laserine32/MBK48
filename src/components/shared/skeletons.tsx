@@ -23,6 +23,29 @@ export const CardsSkeleton = () => {
       <CardSkeleton />
       <CardSkeleton />
       <CardSkeleton />
+      <CardSkeleton />
+      <CardSkeleton />
+      <CardSkeleton />
+      <CardSkeleton />
+    </>
+  );
+};
+
+export const ChartGroupSkeleton = () => {
+  return (
+    <>
+      <Card className="pt-0">
+        <CardHeader className="flex items-center gap-2 space-y-0 border-b py-5 sm:flex-row">
+          <div className="grid flex-1 gap-1">
+            <Skeleton className="h-6 w-80" />
+            <Skeleton className="h-4 w-80" />
+          </div>
+          <Skeleton className="h-6 w-80" />
+        </CardHeader>
+        <CardContent className="px-2 pt-4 sm:px-6 sm:pt-6">
+          <Skeleton className="h-60 w-full" />
+        </CardContent>
+      </Card>
     </>
   );
 };
