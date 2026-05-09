@@ -6,13 +6,15 @@ import { Suspense } from "react";
 const Home = async () => {
   return (
     <>
-      <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="grid grid-cols-2 gap-2 lg:grid-cols-4 lg:gap-4">
         <Suspense fallback={<CardsSkeleton />}>
           <StatCardsWrapper />
         </Suspense>
       </div>
-      <div className="my-6">
-        <Suspense fallback={<ChartGroupSkeleton />}>{/* <ChartWrapper /> */}</Suspense>
+      <div className="my-6 grid grid-cols-1 gap-2 lg:grid-cols-2 lg:gap-4">
+        <Suspense fallback={<ChartGroupSkeleton />}>
+          <ChartWrapper />
+        </Suspense>
       </div>
     </>
   );

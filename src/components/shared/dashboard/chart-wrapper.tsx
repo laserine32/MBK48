@@ -1,13 +1,15 @@
-import { getYearPassed } from "@/lib/utils";
-import { getMainChart } from "@/server/dashboard";
-import DashboardChart from "./dashboard-chart";
+import DashboardBarChart from "./dashboard-bar-chart";
+import DashboardScoreChart from "./dashboard-score-chart";
+import DashboardInsight from "./dashboard-insight";
 
 const ChartWrapper = async () => {
-  const yearPassed = getYearPassed();
-  const data = await getMainChart();
   return (
     <>
-      <DashboardChart data={data} years={yearPassed} />{" "}
+      <div className="flex flex-col-reverse gap-2 md:flex-col md:gap-4">
+        <DashboardScoreChart />
+        <DashboardInsight />
+      </div>
+      <DashboardBarChart />
     </>
   );
 };

@@ -1,9 +1,11 @@
+"use server";
 import { db } from "@/db";
 import { packInUse, packs, production, purchase } from "@/db/schema";
+import { calcTrend, formatedDate, getDaysSpent, getPackRatio } from "@/lib/dashboard-utils";
 import { formatCurrency, formatDateToLocal } from "@/lib/utils";
 import { and, count, desc, eq, gte, lte, sql, sum } from "drizzle-orm";
 
-export type MainChartFunctionType = Awaited<ReturnType<typeof getMainChart>>;
+export type BarChartType = Awaited<ReturnType<typeof getMainChart>>;
 
 export const fetchDashboardCardData = async () => {
   const daysspent = getDaysSpent();
@@ -45,21 +47,6 @@ export const fetchDashboardCardData = async () => {
       day: [`\u00b1 ${Math.round(monthInuse / monthDaysPassed).toLocaleString("id-ID")} / days`, trendInuse],
     },
     ratioPack: ratioPack,
-  };
-};
-
-const formatedDate = (tgl: Date) => {
-  const year: number = tgl.getFullYear();
-  const month: string = (tgl.getMonth() + 1).toString().padStart(2, "0");
-  const lastDay = new Date(tgl.getFullYear(), tgl.getMonth() + 1, 0).getDate().toString().padStart(2, "0");
-  const formatedStart = `${year}-${month}-01`;
-  const formatedEnd = `${year}-${month}-${lastDay}`;
-  return {
-    dateStart: new Date(formatedStart),
-    dateEnd: new Date(formatedEnd),
-    formatedStart: formatedStart,
-    formatedEnd: formatedEnd,
-    formated: `${year}-${month}`,
   };
 };
 
@@ -164,79 +151,6 @@ const getExpenses = async (): Promise<number> => {
   }
 };
 
-const getDaysSpent = () => {
-  const today: Date = new Date();
-  const targetDate: Date = new Date("2024-12-25");
-
-  if (Number.isNaN(targetDate.getTime())) {
-    return { days: "0 Days", spell: "Invalid date format", day: 0 };
-  }
-
-  let differenceMs: number = Math.abs(today.getTime() - targetDate.getTime());
-  const tdifferenceMs: number = differenceMs;
-
-  const msInDay: number = 24 * 60 * 60 * 1000;
-  const msInWeek: number = 7 * msInDay;
-  const msInMonth: number = 30 * msInDay;
-  const msInYear: number = 365 * msInDay;
-
-  const years: number = Math.floor(differenceMs / msInYear);
-  differenceMs %= msInYear;
-
-  const months: number = Math.floor(differenceMs / msInMonth);
-  differenceMs %= msInMonth;
-
-  const weeks: number = Math.floor(differenceMs / msInWeek);
-  differenceMs %= msInWeek;
-
-  const daysRemainder: number = Math.floor(differenceMs / msInDay);
-
-  type ParamKey = "y" | "m" | "w" | "d";
-
-  const spelledOut = (valueCount: number, paramKey: ParamKey): string => {
-    if (valueCount === 1) {
-      if (paramKey === "y") return "A Year";
-      if (paramKey === "m") return "A Month";
-      if (paramKey === "w") return "A Week";
-      if (paramKey === "d") return "A Day";
-    }
-    if (valueCount > 1) {
-      if (paramKey === "y") return `${years} Years`;
-      if (paramKey === "m") return `${months} Months`;
-      if (paramKey === "w") return `${weeks} Weeks`;
-      if (paramKey === "d") return `${daysRemainder} Days`;
-    }
-    return "";
-  };
-
-  const weeksValueForSpelling: number = weeks; // keeps original variable meaning
-  void weeksValueForSpelling;
-
-  const resultParts: string[] = [
-    spelledOut(years, "y"),
-    spelledOut(months, "m"),
-    spelledOut(weeks, "w"),
-    spelledOut(daysRemainder, "d"),
-  ].filter((partStr: string) => Boolean(partStr));
-
-  const resultText: string = resultParts.join(" ") || "";
-
-  const ddayDaysTotalInt64SafeApproximation: number = Math.floor(tdifferenceMs / msInDay);
-
-  // const prevMonth = today.setMonth(today.getMonth() - 1);
-  // const tt: Date = new Date();
-  // const prevDate: Date = new Date(tt.setMonth(tt.getMonth() - 1));
-  // const formattedPrev: string = formatedDate(prevDate);
-
-  return {
-    days: String(ddayDaysTotalInt64SafeApproximation) + ` Days`,
-    spell: resultText || "a Day",
-    day: ddayDaysTotalInt64SafeApproximation,
-    // formated: formatedDate(today),
-    // formattedPrev: formattedPrev,
-  };
-};
-
 export const getCountPack = async () => {
   try {
     const [{ total }] = await db.select({ total: count() }).from(packs).where(eq(packs.flag, true));
@@ -247,74 +161,54 @@ export const getCountPack = async () => {
   }
 };
 
-export const getPackRatio = (fproduced: number, fpackinuse: number, pack: number) => {
-  // const [fproduced, { total: fpackinuse }, pack] = await Promise.all([getProduction(), getPackInUse(), getCountPack()]);
-  const gap = Math.abs(fpackinuse - fproduced);
-  const producedGreater = fproduced > fpackinuse;
-  const inuse = producedGreater ? pack - gap : pack - (pack - gap);
-  const percent = (inuse / pack) * 100;
-
-  return {
-    inuse: inuse,
-    prod: producedGreater ? pack - (pack - gap) : pack - gap,
-    percent: percent,
-  };
-};
-
-export const getMainChart = async () => {
+export const getMainChart = async (year: string) => {
   try {
+    const start_date = new Date(`${year}-01-01`);
+    const end_date = new Date(`${year}-12-31`);
     const dataPurchase = await db
       .select({
-        tgl: sql`TO_CHAR(date, 'YYYY-MM')`.mapWith(String),
-        month: sql`TO_CHAR(date, 'Month')`.mapWith(String),
-        year: sql`TO_CHAR(date, 'YYYY')`.mapWith(String),
+        month: sql`TO_CHAR(DATE_TRUNC('month', date), 'Month')`.mapWith(String),
         purchase: sum(purchase.total).mapWith(Number),
       })
       .from(purchase)
-      .groupBy(sql.raw(`TO_CHAR(date, 'YYYY-MM'), TO_CHAR(date, 'Month'), TO_CHAR(date, 'YYYY')`))
-      .orderBy(sql`1`);
+      .where(and(gte(purchase.date, start_date.toISOString()), lte(purchase.date, end_date.toISOString())))
+      .groupBy(sql`DATE_TRUNC('month', date)`)
+      .orderBy(sql`DATE_TRUNC('month', date)`);
     // console.log(dataPurchase);
     const dataProduction = await db
       .select({
-        tgl: sql`TO_CHAR(date, 'YYYY-MM')`.mapWith(String),
-        month: sql`TO_CHAR(date, 'Month')`.mapWith(String),
-        year: sql`TO_CHAR(date, 'YYYY')`.mapWith(String),
+        month: sql`TO_CHAR(DATE_TRUNC('month', date), 'Month')`.mapWith(String),
         production: count(),
       })
       .from(production)
-      .groupBy(sql.raw(`TO_CHAR(date, 'YYYY-MM'), TO_CHAR(date, 'Month'), TO_CHAR(date, 'YYYY')`))
-      .orderBy(sql`1`);
+      .where(and(gte(production.date, start_date.toISOString()), lte(production.date, end_date.toISOString())))
+      .groupBy(sql`DATE_TRUNC('month', date)`)
+      .orderBy(sql`DATE_TRUNC('month', date)`);
     // console.log(dataProduction);
     const dataPackInUse = await db
       .select({
-        tgl: sql`TO_CHAR(time_start, 'YYYY-MM')`.mapWith(String),
-        month: sql`TO_CHAR(time_start, 'Month')`.mapWith(String),
-        year: sql`TO_CHAR(time_start, 'YYYY')`.mapWith(String),
-        consume: count(),
+        month: sql`TO_CHAR(DATE_TRUNC('month', time_start), 'Month')`.mapWith(String),
+        packinuse: count(),
       })
       .from(packInUse)
-      .groupBy(sql.raw(`TO_CHAR(time_start, 'YYYY-MM'), TO_CHAR(time_start, 'Month'), TO_CHAR(time_start, 'YYYY')`))
-      .orderBy(sql`1`);
+      .where(and(gte(packInUse.timeStart, start_date.toISOString()), lte(packInUse.timeStart, end_date.toISOString())))
+      .groupBy(sql`DATE_TRUNC('month', time_start)`)
+      .orderBy(sql`DATE_TRUNC('month', time_start)`);
     // console.log(dataPackInUse);
     type DataItem = typeof dataPurchase | typeof dataProduction | typeof dataPackInUse;
     type Result = {
-      tgl: string;
       month: string;
-      year: string;
       purchase?: number;
       production?: number;
-      consume?: number;
+      packinuse?: number;
     };
     const map = new Map<string, Result>();
     const mergeData = (data: DataItem) => {
       data.forEach((item) => {
-        const existing = map.get(item.tgl) || {
-          tgl: item.tgl,
+        const existing = map.get(item.month) || {
           month: item.month,
-          year: item.year,
         };
-
-        map.set(item.tgl, {
+        map.set(item.month, {
           ...existing,
           ...item,
         });
@@ -324,41 +218,9 @@ export const getMainChart = async () => {
     mergeData(dataProduction);
     mergeData(dataPackInUse);
 
-    const fexpenses = dataPurchase.reduce((acm, cui) => {
-      return acm + cui.purchase;
-    }, 0);
-    const fproduced = dataProduction.reduce((acm, cui) => {
-      return acm + cui.production;
-    }, 0);
-
-    return {
-      fexpenses: fexpenses,
-      fproduced: fproduced,
-      mainChart: Array.from(map.values()),
-    };
+    return Array.from(map.values());
   } catch (error) {
     console.error(error);
     return null;
   }
-};
-
-const calcTrend = (data: Array<number>) => {
-  if (data.length == 1) {
-    return {
-      currentValue: data[0],
-      trendValue: 0,
-      message: "",
-    };
-  }
-  const trendValue = ((data[0] - data[1]) / data[1]) * 100;
-  const trend = Math.abs(trendValue).toLocaleString("id-ID", {
-    minimumFractionDigits: 1,
-    maximumFractionDigits: 1,
-  });
-  const message = (trendValue > 0 ? `\uD83D\uDCC8` : `\uD83D\uDCC9`) + ` ${trend}% vs previous period`;
-  return {
-    currentValue: data[0],
-    trendValue: trendValue,
-    message: message,
-  };
 };

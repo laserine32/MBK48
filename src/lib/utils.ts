@@ -65,5 +65,12 @@ export const getYearPassed = () => {
   const startYear: number = 2024;
   const currentYear: number = new Date().getFullYear();
   const years: number[] = Array.from({ length: currentYear - startYear + 1 }, (_, i) => startYear + i);
-  return years;
+  return years.map((e) => `${e}`);
+};
+
+export const genrateRandRangeArray = (n: number, min: number = 1, max: number = 12) => {
+  // const randomArray: number[] = Array.from({ length: n }, () => Math.floor(Math.random() * (100 - 10 + 1)) + 10);
+  // const randomArray: number[] = Array.from({ length: n }, () => Math.floor(Math.random() * 101));
+  const randomArray: number[] = Array.from({ length: n }, () => Math.floor(Math.random() * (max - min + 1)) + min);
+  return randomArray;
 };

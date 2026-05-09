@@ -1,65 +1,62 @@
 import { fetchDashboardCardData } from "@/server/dashboard";
-import {
-  CalendarIcon,
-  CardholderIcon,
-  FactoryIcon,
-  MoneyIcon,
-  SmileyIcon,
-  WalletIcon,
-  WarehouseIcon,
-} from "@phosphor-icons/react/dist/ssr";
 import { RatioPackCard, StatCard } from "./dashboard-card";
 
 const StatCardsWrapper = async () => {
-  const { expenses, produced, packinuse, daysspent, monthExpenses, monthProduced, monthInuse, ratioPack } =
-    await fetchDashboardCardData();
+  const rawData = await fetchDashboardCardData();
+  const { expenses, produced, packinuse, daysspent, monthExpenses, monthProduced, monthInuse, ratioPack } = rawData;
   return (
     <>
       <StatCard
         title="Expenses"
         value={expenses.total}
-        type={<WalletIcon className="h-5 w-5" />}
+        CardIcon={"WalletIcon"}
         isCurrency={true}
         subvalue={expenses.day}
+        theme="1"
       />
-      <StatCard
-        title="Produced"
-        value={produced.total}
-        type={<FactoryIcon className="h-5 w-5" />}
-        subvalue={produced.day}
-      />
-      <StatCard
-        title="Pack In Use"
-        value={`${packinuse.total}`}
-        type={<CardholderIcon className="h-5 w-5" />}
-        subvalue={packinuse.day}
-      />
-      <StatCard
-        title="Days Spent"
-        value={daysspent.day}
-        type={<CalendarIcon className="h-5 w-5" />}
-        valueExt="Days"
-        subvalue={daysspent.spell}
-      />
-
       <StatCard
         title="Month Expenses"
         value={monthExpenses.total}
-        type={<MoneyIcon className="h-5 w-5" />}
+        CardIcon={"MoneyIcon"}
         isCurrency={true}
         subvalue={monthExpenses.day}
+        theme="6"
       />
       <StatCard
         title="Month Produced"
         value={monthProduced.total}
-        type={<WarehouseIcon className="h-5 w-5" />}
+        CardIcon={"WarehouseIcon"}
         subvalue={monthProduced.day}
+        theme="7"
       />
       <StatCard
         title="Month Pack In Use"
         value={monthInuse.total}
-        type={<SmileyIcon className="h-5 w-5" />}
+        CardIcon={"SmileyIcon"}
         subvalue={monthInuse.day}
+        theme="8"
+      />
+      <StatCard
+        title="Pack In Use"
+        value={`${packinuse.total}`}
+        CardIcon={"CardholderIcon"}
+        subvalue={packinuse.day}
+        theme="3"
+      />
+      <StatCard
+        title="Pack Produced"
+        value={produced.total}
+        CardIcon={"FactoryIcon"}
+        subvalue={produced.day}
+        theme="2"
+      />
+      <StatCard
+        title="Days Spent"
+        value={daysspent.day}
+        CardIcon={"CalendarIcon"}
+        valueExt="Days"
+        subvalue={daysspent.spell}
+        theme="4"
       />
       <RatioPackCard data={ratioPack} />
     </>
