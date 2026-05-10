@@ -121,3 +121,57 @@ export const getDaysSpent = () => {
     // formattedPrev: formattedPrev,
   };
 };
+
+export const clamp = (value: number, min = 0, max = 100) => Math.max(min, Math.min(max, value));
+
+export const getDashboardItemScore = (avg: number | unknown, sum: number | unknown, normal: boolean = false) => {
+  if (typeof avg !== "number" || typeof sum !== "number") return 0;
+  const a = ((sum - avg) / avg) * 100;
+  const b = (normal ? 100 : 70) - a;
+  // console.log(a, b);
+  return clamp(b);
+};
+
+export type rankMsgType = {
+  excellent: string;
+  good: string;
+  warning: string;
+  danger: string;
+};
+
+export const getRankMessage = (score: number, msg: rankMsgType) => {
+  let rank: string = "unbelivable";
+  let message = "Unbelivable!";
+  if (score <= 40) {
+    rank = "danger";
+    message = msg.danger;
+  } else if (score <= 60) {
+    rank = "warning";
+    message = msg.warning;
+  } else if (score <= 90) {
+    rank = "good";
+    message = msg.good;
+  } else {
+    rank = "excellent";
+    message = msg.excellent;
+  }
+  return { rank: rank, message: message };
+};
+
+export const standardDeviationScore = (arr: number[]) => {
+  const avg = (arr: number[]) => (arr.length === 0 ? 0 : arr.reduce((a, b) => a + b, 0) / arr.length);
+  if (arr.length <= 1) return 0;
+  const mean = avg(arr);
+  console.log(`MEAN : `, mean);
+  const variance =
+    arr.reduce((sum, value) => {
+      // return sum + Math.pow(value - mean, 2);
+      return sum + (value - mean) ** 2;
+    }, 0) /
+    (arr.length - 1);
+  const sd = Math.sqrt(variance);
+  // const rawscore = (sd / mean) * 100;
+  // console.log(`SD = `, sd, ` RAW SCORE = `, rawscore);
+  // return 100 - Math.min(Math.ceil(rawscore), 100);
+  return sd;
+};

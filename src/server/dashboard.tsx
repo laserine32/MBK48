@@ -1,11 +1,19 @@
 "use server";
 import { db } from "@/db";
 import { packInUse, packs, production, purchase } from "@/db/schema";
-import { calcTrend, formatedDate, getDaysSpent, getPackRatio } from "@/lib/dashboard-utils";
+import {
+  calcTrend,
+  formatedDate,
+  getDashboardItemScore,
+  getDaysSpent,
+  getPackRatio,
+  getRankMessage,
+} from "@/lib/dashboard-utils";
 import { formatCurrency, formatDateToLocal } from "@/lib/utils";
 import { and, count, desc, eq, gte, lte, sql, sum } from "drizzle-orm";
 
 export type BarChartType = Awaited<ReturnType<typeof getMainChart>>;
+export type DashboardScoreType = Awaited<ReturnType<typeof getScore>>;
 
 export const fetchDashboardCardData = async () => {
   const daysspent = getDaysSpent();
@@ -222,5 +230,119 @@ export const getMainChart = async (year: string) => {
   } catch (error) {
     console.error(error);
     return null;
+  }
+};
+
+const getPurchaseScoreData = async () => {
+  const { rows } = await db.execute(sql`
+  WITH monthly_totals AS (
+      SELECT 
+          DATE_TRUNC('month', date) AS month,
+          SUM(total) AS total_value,
+          DATE_TRUNC('month', date) = DATE_TRUNC('month', CURRENT_DATE) AS is_current_month
+      FROM "Purchase"
+      WHERE date < DATE_TRUNC('month', CURRENT_DATE) + INTERVAL '1 month'
+      GROUP BY DATE_TRUNC('month', date)
+  )
+  SELECT 
+      ROUND(AVG(total_value) FILTER (WHERE NOT is_current_month))::INT AS avg,
+      COALESCE(MAX(total_value) FILTER (WHERE is_current_month), 0)::INT AS sum
+  FROM monthly_totals;`);
+  return rows[0];
+};
+
+const getPackInUseScoreData = async () => {
+  const { rows } = await db.execute(sql`
+  WITH monthly_totals AS (
+      SELECT 
+          DATE_TRUNC('month', time_start) AS month,
+          COUNT(*) AS total_value,
+          DATE_TRUNC('month', time_start) = DATE_TRUNC('month', CURRENT_DATE) AS is_current_month
+      FROM "PackInUse"
+      WHERE time_start < DATE_TRUNC('month', CURRENT_DATE) + INTERVAL '1 month'
+      GROUP BY DATE_TRUNC('month', time_start)
+  )
+  SELECT 
+      ROUND(AVG(total_value) FILTER (WHERE NOT is_current_month))::INT AS avg,
+      COALESCE(MAX(total_value) FILTER (WHERE is_current_month), 0)::INT AS sum
+  FROM monthly_totals;`);
+  return rows[0];
+};
+
+export const getScore = async () => {
+  try {
+    const date: Date = new Date();
+    const daysPassed: number = date.getDate();
+    const daysInMonth: number = new Date(date.getFullYear(), date.getMonth() + 1, 0).getDate();
+
+    const purchaseScoreData = await getPurchaseScoreData();
+    const packInUseScoreData = await getPackInUseScoreData();
+
+    const purchaseScore = getDashboardItemScore(purchaseScoreData.avg, purchaseScoreData.sum);
+    const packInUseScore = getDashboardItemScore(packInUseScoreData.avg, packInUseScoreData.sum);
+    const prediction = (Number(packInUseScoreData.sum) / daysPassed) * daysInMonth;
+    const predictionScore = getDashboardItemScore(packInUseScoreData.avg, prediction, true);
+    const totalScore = purchaseScore * 0.25 + packInUseScore * 0.25 + predictionScore * 0.5;
+
+    type msgTotalScoreType = {
+      rank: string;
+      message: string;
+    };
+    const msgTotalScore: msgTotalScoreType = getRankMessage(totalScore, {
+      excellent: `Good job! Must keep it up.`,
+      good: `You're doing okay, but can do better!`,
+      warning: `It can still be fixed.`,
+      danger: `Needs special attention immediately!`,
+    });
+    const msgPurchaseScore = {
+      title: `Spending Control`,
+      ...getRankMessage(purchaseScore, {
+        excellent: `Excellent`,
+        good: `Good`,
+        warning: `More Frugal`,
+        danger: `What happened?`,
+      }),
+    };
+    const msgPackInUseScore = {
+      title: `Consumtion Level`,
+      ...getRankMessage(packInUseScore, {
+        excellent: `Excellent`,
+        good: `Good`,
+        warning: `Please lower it`,
+        danger: `What happened?`,
+      }),
+    };
+    const msgPredictionScore = {
+      title: `Prediction Score`,
+      ...getRankMessage(predictionScore, {
+        excellent: `Excellent`,
+        good: `Good`,
+        warning: `Please lower it`,
+        danger: `What happened?`,
+      }),
+    };
+    return {
+      summary: {
+        score: Math.floor(totalScore),
+        description: msgTotalScore as msgTotalScoreType,
+      },
+      scores: {
+        totalScore,
+        purchaseScore,
+        packInUseScore,
+        predictionScore,
+      },
+      messages: [msgPurchaseScore, msgPackInUseScore, msgPredictionScore],
+    };
+  } catch (error) {
+    console.error(error);
+    return {
+      summary: {
+        score: 0,
+        description: { rank: ``, message: `` },
+      },
+      scores: {},
+      messages: [],
+    };
   }
 };

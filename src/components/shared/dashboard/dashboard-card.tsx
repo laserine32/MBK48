@@ -151,7 +151,6 @@ const SubValue = ({ value }: { value: Array<string> | string }) => {
           return <PSubValue key={i}>{e}</PSubValue>;
         }
         const trendData = e.split("~");
-        console.log(trendData);
         return (
           <div
             key={i}

@@ -4,6 +4,7 @@ import { SearchParams } from "@/lib/customTypes";
 import { formatTimeToLocal } from "@/lib/utils";
 import { getPackProduction, getProductionPage, getProductionSearchPagin } from "@/server/production";
 import { Metadata } from "next";
+import { Suspense } from "react";
 
 export const generateMetadata = (): Metadata => {
   return {
@@ -31,7 +32,9 @@ const ProductionPage = async ({
   const datacb = await getPackProduction();
   return (
     <>
-      <ProductionFormPage datacb={datacb} />
+      <Suspense key={datacb.toString()} fallback={null}>
+        <ProductionFormPage datacb={datacb} />
+      </Suspense>
       <ProcessPage
         pageTitle={"Production"}
         suspenseKey={query + currentPage}

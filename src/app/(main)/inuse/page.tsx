@@ -4,6 +4,7 @@ import { SearchParams } from "@/lib/customTypes";
 import { formatTimeToLocal } from "@/lib/utils";
 import { getInUsedPage, getInUsedSearchPagin, getPackInUse } from "@/server/inuse";
 import { Metadata } from "next";
+import { Suspense } from "react";
 
 export const generateMetadata = (): Metadata => {
   return {
@@ -32,7 +33,9 @@ const InusePage = async ({
   const datacb = await getPackInUse();
   return (
     <>
-      <InuseFormPage datacb={datacb} />
+      <Suspense key={datacb.toString()} fallback={null}>
+        <InuseFormPage datacb={datacb} />
+      </Suspense>
       <ProcessPage
         pageTitle={"Packs In Used"}
         suspenseKey={query + currentPage}

@@ -53,10 +53,12 @@ const DashboardBarChart = () => {
   if (!dataChart) {
     return <BarChartSkeleton />;
   }
+  const BAR_HEIGHT = 42;
+  const chartHeight = (dataChart?.length ?? 0) * BAR_HEIGHT;
 
   return (
     <>
-      <Card className="min-h-dvh pt-0 md:min-h-auto">
+      <Card className="h-full pt-0">
         <CardHeader className="flex flex-col items-center gap-2 space-y-0 border-b py-5 md:flex-row">
           <div className="grow gap-1">
             <CardTitle>{`Bar Chart - Interactive`}</CardTitle>
@@ -97,7 +99,12 @@ const DashboardBarChart = () => {
             })}
           </div>
           {/*  */}
-          <div className="grow self-stretch p-2">
+          <div
+            style={{
+              height: chartHeight,
+            }}
+            className="self-stretch p-2"
+          >
             {isLoading && <BarChartHorizontalChartSkeleton />}
             <ChartContainer config={chartConfig} className={cn(isLoading && "hidden", "aspect-auto h-full")}>
               <BarChart
@@ -120,7 +127,7 @@ const DashboardBarChart = () => {
                 />
                 <XAxis dataKey={activeChart} type="number" hide />
                 <ChartTooltip cursor={false} content={<ChartTooltipContent indicator="line" />} />
-                <Bar dataKey={activeChart} fill={`var(--color-${activeChart})`} radius={4}>
+                <Bar dataKey={activeChart} fill={`var(--color-${activeChart})`} radius={4} barSize={28}>
                   <LabelList
                     dataKey="month"
                     position="insideLeft"

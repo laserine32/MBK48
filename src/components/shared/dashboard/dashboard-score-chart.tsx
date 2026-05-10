@@ -1,50 +1,54 @@
 "use client";
 import { Card, CardContent } from "@/components/ui/card";
-import { cn } from "@/lib/utils";
-import { CheckCircleIcon, WarningIcon, XCircleIcon } from "@phosphor-icons/react";
+import { capitalizeFirstLetter, cn } from "@/lib/utils";
+import { CheckCircleIcon, SealCheckIcon, WarningIcon, XCircleIcon } from "@phosphor-icons/react";
 import { ChartContainer, type ChartConfig } from "@/components/ui/chart";
 import { Label, PolarGrid, PolarRadiusAxis, RadialBar, RadialBarChart } from "recharts";
+import { DashboardScoreType } from "@/server/dashboard";
 
-const scoreInfo: Array<ScoreInfoType> = [
-  {
-    title: `Spending Control`,
-    score: `Good`,
-    theme: `good`,
+const dataScoreInfoTheme = {
+  excellent: {
+    ScIcon: SealCheckIcon,
+    color: `text-fg-1`,
+    fill: "var(--fg-1)",
   },
-  {
-    title: `Consumtion Level`,
-    score: `High this month`,
-    theme: `warning`,
+  good: {
+    ScIcon: CheckCircleIcon,
+    color: `text-fg-2`,
+    fill: "var(--fg-2)",
   },
-  {
-    title: `Consistency`,
-    score: `Improving`,
-    theme: `good`,
+  warning: {
+    ScIcon: WarningIcon,
+    color: `text-fg-3`,
+    fill: "var(--fg-3)",
   },
-  {
-    title: `Self Control`,
-    score: `Needs attention`,
-    theme: `warning`,
+  danger: {
+    ScIcon: XCircleIcon,
+    color: `text-fg-5`,
+    fill: "var(--fg-5)",
   },
-  {
-    title: `Is Danger`,
-    score: `Super Needs attention`,
-    theme: `danger`,
-  },
-];
+};
 
-const chartData = [{ name: "score", score: 70, fill: "var(--fg-1)" }];
 const chartConfig = {
   score: {
     label: "score",
   },
-  safari: {
-    label: "Score",
-    color: "var(--chart-1)",
-  },
 } satisfies ChartConfig;
 
-const DashboardScoreChart = () => {
+const DashboardScoreChart = ({ data }: { data: DashboardScoreType }) => {
+  const { summary, messages } = data;
+  const mainTheme = dataScoreInfoTheme[summary.description.rank as keyof typeof dataScoreInfoTheme];
+  const chartData = [{ name: "score", score: data.summary.score, fill: mainTheme.fill }];
+
+  const scoreInfo: Array<ScoreInfoType> = messages.map(
+    (e) =>
+      ({
+        title: e.title,
+        score: e.message,
+        theme: e.rank,
+      }) as ScoreInfoType
+  );
+
   return (
     <>
       <Card className="pt-0">
@@ -88,8 +92,10 @@ const DashboardScoreChart = () => {
             </ChartContainer>
           </div>
           <div className="flex flex-col gap-2">
-            <h3 className={cn("text-sm font-semibold md:py-2 md:text-2xl", "text-fg-1")}>{`GOOD`}</h3>
-            <p className="md:text-md mb-4 text-xs">{`You're doing okay, but can do better!`}</p>
+            <h3 className={cn("text-sm font-semibold md:py-2 md:text-2xl", "text-fg-1")}>
+              {capitalizeFirstLetter(summary.description.rank)}
+            </h3>
+            <p className="md:text-md mb-4 text-xs">{summary.description.message}</p>
             {scoreInfo.map((e, i) => (
               <ScoreInfo key={i} title={e.title} score={e.score} theme={e.theme} />
             ))}
@@ -98,21 +104,6 @@ const DashboardScoreChart = () => {
       </Card>
     </>
   );
-};
-
-const dataScoreInfoTheme = {
-  good: {
-    ScIcon: CheckCircleIcon,
-    color: `text-fg-2`,
-  },
-  warning: {
-    ScIcon: WarningIcon,
-    color: `text-fg-3`,
-  },
-  danger: {
-    ScIcon: XCircleIcon,
-    color: `text-fg-5`,
-  },
 };
 
 type ScoreInfoType = {
