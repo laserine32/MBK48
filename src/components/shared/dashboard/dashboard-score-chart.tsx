@@ -92,7 +92,7 @@ const DashboardScoreChart = ({ data }: { data: DashboardScoreType }) => {
             </ChartContainer>
           </div>
           <div className="flex flex-col gap-2">
-            <h3 className={cn("text-sm font-semibold md:py-2 md:text-2xl", "text-fg-1")}>
+            <h3 className={cn("text-sm font-semibold md:py-2 md:text-2xl", mainTheme.color)}>
               {capitalizeFirstLetter(summary.description.rank)}
             </h3>
             <p className="md:text-md mb-4 text-xs">{summary.description.message}</p>

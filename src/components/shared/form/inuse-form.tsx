@@ -28,7 +28,7 @@ const formSchema = z.object({
 const InuseFormPage = ({ datacb }: { datacb: CBPackInUseType }) => {
   const router = useRouter();
   const { setToast } = useApp();
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const defVal = datacb.find((e) => e.active === true);
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -41,6 +41,10 @@ const InuseFormPage = ({ datacb }: { datacb: CBPackInUseType }) => {
     form.reset({
       packId: defVal?.value || "",
     });
+    const setloading = () => {
+      setIsLoading(false);
+    };
+    setloading();
   }, [defVal, form]);
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
@@ -53,15 +57,12 @@ const InuseFormPage = ({ datacb }: { datacb: CBPackInUseType }) => {
         message: "Data added successfully.",
       });
       router.refresh();
-      setIsLoading(false);
     } catch (error) {
       console.error(error);
       setToast({
         type: "error",
         message: "Failed to use pack.",
       });
-    } finally {
-      setIsLoading(false);
     }
   }
 
